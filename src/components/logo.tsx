@@ -3,8 +3,9 @@ import logo from '../../public/logo.svg';
 import Link from 'next/link';
 
 export default function Logo() {
-  return <Link href="/">
-    <Image src={logo} alt="Logo" />;
-  </Link>
-
+  return (
+    <Link href="/">
+      <Image src={logo} alt="Logo" />
+    </Link>
+  );
 }
