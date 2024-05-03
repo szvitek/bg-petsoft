@@ -6,7 +6,7 @@ import SearchForm from '@/components/search-form';
 import Stats from '@/components/stats';
 
 type Props = {};
-export default function Page({}: Props) {
+export default async function Page({}: Props) {
   return (
     <main>
       <div className="flex justify-between items-center text-white py-8">
