@@ -2,6 +2,7 @@ import AppFooter from '@/components/app-footer';
 import AppHeader from '@/components/app-header';
 import BackgroundPattern from '@/components/background-pattern';
 import PetContextProvider from '@/contexts/pet-context-provider';
+import SearchContextProvider from '@/contexts/search-context-provider';
 import { Pet } from '@/lib/types';
 import { PropsWithChildren } from 'react';
 
@@ -19,7 +20,11 @@ export default async function Layout({ children }: PropsWithChildren) {
       <BackgroundPattern />
       <div className="flex flex-col min-h-screen max-w-[1050px] mx-auto px-4">
         <AppHeader />
-        <PetContextProvider data={data}>{children}</PetContextProvider>
+
+        <SearchContextProvider>
+          <PetContextProvider data={data}>{children}</PetContextProvider>
+        </SearchContextProvider>
+
         <AppFooter />
       </div>
     </>
