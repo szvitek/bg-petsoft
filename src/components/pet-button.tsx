@@ -4,11 +4,13 @@ import { PropsWithChildren } from 'react';
 
 type PetButtonProps = {
   actionType: 'add' | 'edit' | 'checkout';
+  onClick?: () => void;
 };
 
 export default function PetButton({
   actionType,
   children,
+  onClick,
 }: PropsWithChildren<PetButtonProps>) {
   if (actionType === 'add') {
     return (
@@ -23,6 +25,10 @@ export default function PetButton({
   }
 
   if (actionType === 'checkout') {
-    return <Button variant="secondary">{children}</Button>;
+    return (
+      <Button variant="secondary" onClick={onClick}>
+        {children}
+      </Button>
+    );
   }
 }
