@@ -38,6 +38,9 @@ export default function PetContextProvider({
     setPets((prev) => prev.filter((pet) => pet.id !== id));
     setSelectedPetId(null);
   };
+  const handleAddPet = (newPet: Pet) => {
+    setPets(prev => [...prev, newPet])
+  }
 
   return (
     <PetContext.Provider
