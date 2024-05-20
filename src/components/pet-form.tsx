@@ -16,7 +16,7 @@ export default function PetForm({
   actionType,
   onFormSubmission,
 }: PetFormProps) {
-  const { handleAddPet, selectedPet } = usePetContext();
+  const { handleAddPet, handleEditPet, selectedPet } = usePetContext();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -33,7 +33,11 @@ export default function PetForm({
       notes: formData.get('notes') as string,
     };
 
-    handleAddPet(newPet);
+    if (actionType === 'add') {
+      handleAddPet(newPet);
+    } else if (actionType === 'edit') {
+      handleEditPet(selectedPet!.id, newPet);
+    }
     onFormSubmission();
   };
 
