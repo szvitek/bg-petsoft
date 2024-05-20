@@ -9,9 +9,13 @@ import { usePetContext } from '@/lib/hooks';
 
 type PetFormProps = {
   actionType: 'add' | 'edit';
+  onFormSubmission: () => void;
 };
 
-export default function PetForm({ actionType }: PetFormProps) {
+export default function PetForm({
+  actionType,
+  onFormSubmission,
+}: PetFormProps) {
   const { handleAddPet } = usePetContext();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -28,7 +32,9 @@ export default function PetForm({ actionType }: PetFormProps) {
       age: +(formData.get('age') as string),
       notes: formData.get('notes') as string,
     };
+
     handleAddPet(newPet);
+    onFormSubmission();
   };
 
   return (
