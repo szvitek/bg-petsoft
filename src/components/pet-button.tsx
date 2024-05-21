@@ -14,6 +14,7 @@ import PetForm from './pet-form';
 
 type PetButtonProps = {
   actionType: 'add' | 'edit' | 'checkout';
+  disabled?: boolean;
   onClick?: () => void;
 };
 
@@ -21,12 +22,13 @@ export default function PetButton({
   actionType,
   children,
   onClick,
+  disabled,
 }: PropsWithChildren<PetButtonProps>) {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   if (actionType === 'checkout') {
     return (
-      <Button variant="secondary" onClick={onClick}>
+      <Button disabled={disabled} variant="secondary" onClick={onClick}>
         {children}
       </Button>
     );
