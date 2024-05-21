@@ -1,5 +1,5 @@
-import { useFormStatus } from "react-dom";
-import { Button } from "./ui/button";
+import { useFormStatus } from 'react-dom';
+import { Button } from './ui/button';
 
 export default function PetFormBtn({ actionType }) {
   const { pending } = useFormStatus();
