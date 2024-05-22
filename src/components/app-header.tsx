@@ -10,8 +10,7 @@ const routes = [
   { label: 'Account', path: '/app/account' },
 ];
 
-type Props = {};
-export default function AppHeader({}: Props) {
+export default function AppHeader() {
   const activePathname = usePathname();
 
   return (
