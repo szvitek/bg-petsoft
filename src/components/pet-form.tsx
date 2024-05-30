@@ -6,19 +6,42 @@ import { Textarea } from './ui/textarea';
 import { usePetContext } from '@/lib/hooks';
 import PetFormBtn from './pet-form-btn';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { DEFAULT_PET_IMAGE } from '@/lib/constatns';
 
 type PetFormProps = {
   actionType: 'add' | 'edit';
   onFormSubmission: () => void;
 };
 
-type TPetForm = {
-  name: string;
-  ownerName: string;
-  imageUrl: string;
-  age: number;
-  notes: string;
-};
+const petFormSchema = z.object({
+  name: z.string().trim().min(1, { message: 'Name is required' }).max(100),
+  ownerName: z
+    .string()
+    .trim()
+    .min(1, { message: 'Owner name is required' })
+    .max(100),
+  imageUrl: z.union([
+    z.literal(''),
+    z.string().trim().url({ message: 'Image url must be a valid url' }),
+  ]),
+  age: z.coerce.number().int().positive().max(100),
+  notes: z.union([z.literal(''), z.string().trim().max(1000)]),
+});
+/*
+  this is not working with this setup because server actions are consuming formData,
+  but with onSubmit this is how to transform form data
+  same thing with z.trim() and z.coerce() ... :/
+  .transform((data) => ({
+    ...data,
+    imageUrl:
+      data.imageUrl ||
+      DEFAULT_PET_IMAGE,
+  }));
+  */
+
+type TPetForm = z.infer<typeof petFormSchema>;
 
 export default function PetForm({
   actionType,
@@ -30,7 +53,10 @@ export default function PetForm({
     register,
     formState: { errors },
     trigger,
-  } = useForm<TPetForm>();
+    getValues,
+  } = useForm<TPetForm>({
+    resolver: zodResolver(petFormSchema),
+  });
 
   return (
     <form
@@ -40,15 +66,8 @@ export default function PetForm({
 
         onFormSubmission();
 
-        const petData = {
-          name: formData.get('name') as string,
-          ownerName: formData.get('ownerName') as string,
-          imageUrl:
-            (formData.get('imageUrl') as string) ||
-            'https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png',
-          age: Number(formData.get('age')),
-          notes: formData.get('notes') as string,
-        };
+        const petData = getValues();
+        petData.imageUrl = petData.imageUrl || DEFAULT_PET_IMAGE;
 
         if (actionType === 'add') {
           await handleAddPet(petData);
@@ -95,7 +114,7 @@ export default function PetForm({
           <Label htmlFor="imageUrl">Image Url</Label>
           <Input id="imageUrl" {...register('imageUrl')} />
           {errors.imageUrl && (
-            <p className="text-red-500">{errors.nimageUrlame.message}</p>
+            <p className="text-red-500">{errors.imageUrl.message}</p>
           )}
         </div>
         <div className="space-y-1">

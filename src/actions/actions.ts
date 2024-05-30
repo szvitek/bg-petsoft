@@ -15,6 +15,7 @@ export async function addPet(petData: PetEssentials) {
       data: petData,
     });
   } catch (error) {
+    console.log(error);
     return {
       message: 'Could not add pet.',
     };
