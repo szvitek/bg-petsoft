@@ -3,16 +3,25 @@
 import prisma from '@/lib/db';
 import { PetEssentials } from '@/lib/types';
 import { sleep } from '@/lib/utils';
+import { petFormSchema } from '@/lib/validations';
 import { Pet } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 
-export async function addPet(petData: PetEssentials) {
+export async function addPet(petData: unknown) {
   // mock network time
   await sleep(1000);
 
+  // petFormSchema.safeParse() throws an error on fail
+  const validatedPet = petFormSchema.safeParse(petData);
+  if (!validatedPet.success) {
+    return {
+      message: 'Invalid pet data',
+    };
+  }
+
   try {
     await prisma.pet.create({
-      data: petData,
+      data: validatedPet.data,
     });
   } catch (error) {
     console.log(error);
