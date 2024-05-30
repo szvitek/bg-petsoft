@@ -22,3 +22,5 @@ export const petFormSchema = z
   }));
 
 export type TPetForm = z.infer<typeof petFormSchema>;
+
+export const petIdSchema = z.string().cuid();
