@@ -6,7 +6,6 @@ import { Textarea } from './ui/textarea';
 import { usePetContext } from '@/lib/hooks';
 import PetFormBtn from './pet-form-btn';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DEFAULT_PET_IMAGE } from '@/lib/constatns';
 import { TPetForm, petFormSchema } from '@/lib/validations';
@@ -29,13 +28,16 @@ export default function PetForm({
     getValues,
   } = useForm<TPetForm>({
     resolver: zodResolver(petFormSchema),
-    defaultValues: actionType === 'edit' ? {
-      name: selectedPet?.name,
-      ownerName: selectedPet?.ownerName,
-      imageUrl: selectedPet?.imageUrl,
-      age: selectedPet?.age,
-      notes: selectedPet?.notes,
-    } : undefined,
+    defaultValues:
+      actionType === 'edit'
+        ? {
+            name: selectedPet?.name,
+            ownerName: selectedPet?.ownerName,
+            imageUrl: selectedPet?.imageUrl,
+            age: selectedPet?.age,
+            notes: selectedPet?.notes,
+          }
+        : undefined,
   });
 
   return (

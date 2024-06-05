@@ -7,6 +7,7 @@ import { petFormSchema, petIdSchema } from '@/lib/validations';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 import { redirect } from 'next/navigation';
+import { checkAuth } from '@/lib/server-utils';
 
 // --- user actions ---
 export async function logIn(formData: FormData) {
@@ -39,10 +40,8 @@ export async function addPet(petData: unknown) {
   // mock network time
   await sleep(1000);
 
-  const session = await auth();
-  if (!session?.user) {
-    redirect('/login');
-  }
+  // auth check
+  const session = await checkAuth();
 
   // petFormSchema.safeParse() throws an error on fail
   const validatedPet = petFormSchema.safeParse(petData);
@@ -78,10 +77,7 @@ export async function editPet(petId: unknown, petData: unknown) {
   await sleep(1000);
 
   // auth check
-  const session = await auth();
-  if (!session?.user) {
-    redirect('/login');
-  }
+  const session = await checkAuth();
 
   // validation
   const validatedPetId = petIdSchema.safeParse(petId);
@@ -131,10 +127,7 @@ export async function deletePet(petId: unknown) {
   await sleep(1000);
 
   // authentication check
-  const session = await auth();
-  if (!session?.user) {
-    redirect('/login');
-  }
+  const session = await checkAuth();
 
   // validation
   const validatedPetId = petIdSchema.safeParse(petId);
@@ -147,13 +140,13 @@ export async function deletePet(petId: unknown) {
   // authorization check
   const pet = await prisma.pet.findUnique({
     where: {
-      id: validatedPetId.data
-    }
-  })
+      id: validatedPetId.data,
+    },
+  });
   if (!pet) {
     return {
-      message: 'Pet not found.'
-    }
+      message: 'Pet not found.',
+    };
   }
   if (pet.userId !== session.user.id) {
     return {
