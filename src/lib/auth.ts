@@ -74,5 +74,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return false;
     },
+    jwt({ token, user }) {
+      // by default id is not included in the payload
+      // we have to add it manually
+      if (user?.id) {
+        // User is available during sign-in
+        token.userId = user.id;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      // and we have to manually attach the userId to the session
+      if (session.user) {
+        session.user.id = token.userId;
+      }
+      return session;
+    },
   },
 });
