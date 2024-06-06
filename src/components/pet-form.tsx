@@ -42,7 +42,7 @@ export default function PetForm({
 
   return (
     <form
-      action={async (formData) => {
+      action={async () => {
         const result = await trigger();
         if (!result) return;
 

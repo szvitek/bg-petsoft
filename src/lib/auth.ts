@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { getUserByEmail } from './server-utils';
+import { authSchema } from './validations';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
@@ -19,11 +20,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: {},
       },
       authorize: async (credentials) => {
-        const { email, password } = credentials;
-        // runs on login
-        const user = await getUserByEmail(email);
+        // authorize runs on every login
 
-        console.log('user');
+        // validation
+        const validatedFormData = authSchema.safeParse(credentials);
+        if (!validatedFormData.success) {
+          return null;
+        }
+
+        const { email, password } = validatedFormData.data;
+        const user = await getUserByEmail(email);
 
         if (!user) {
           // No user found, so this is their first attempt to login
