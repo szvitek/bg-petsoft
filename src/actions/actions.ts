@@ -8,9 +8,10 @@ import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 import { checkAuth, getPetById } from '@/lib/server-utils';
 import { Prisma } from '@prisma/client';
+import { AuthError } from 'next-auth';
 
 // --- user actions ---
-export async function logIn(formData: unknown) {
+export async function logIn(prevState: unknown, formData: unknown) {
   // check type
   if (!(formData instanceof FormData)) {
     return {
@@ -18,14 +19,35 @@ export async function logIn(formData: unknown) {
     };
   }
 
-  await signIn('credentials', formData);
+  try {
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      console.log(error.type);
+      switch (error.type) {
+        case 'CredentialsSignin': {
+          return {
+            message: 'Invalid credentials.',
+          };
+        }
+        default: {
+          return {
+            message: 'Error. Could not sign in.',
+          };
+        }
+      }
+    }
+
+    // have to throw the error again because of redirect()
+    throw error;
+  }
 }
 
 export async function logOut() {
   return signOut({ redirectTo: '/' });
 }
 
-export async function signUp(formData: unknown) {
+export async function signUp(prevState: unknown, formData: unknown) {
   await sleep();
 
   // check type
