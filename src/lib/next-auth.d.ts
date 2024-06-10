@@ -1,6 +1,10 @@
 import { User } from 'next-auth';
 
 declare module 'next-auth' {
+  interface User {
+    hasAccess: boolean;
+  }
+
   /**
    * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
@@ -23,5 +27,6 @@ import { JWT } from 'next-auth/jwt';
 declare module 'next-auth/jwt' {
   interface JWT {
     userId: string;
+    hasAccess: boolean;
   }
 }

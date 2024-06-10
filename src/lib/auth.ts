@@ -62,14 +62,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return false;
       }
 
-      if (isLoggedIn && isTryingToAccessApp) {
+      if (isLoggedIn && isTryingToAccessApp && !auth.user.hasAccess) {
+        return Response.redirect(new URL('/payment', request.nextUrl));
+      }
+
+      if (isLoggedIn && isTryingToAccessApp && auth.user.hasAccess) {
         return true;
       }
 
       if (isLoggedIn && !isTryingToAccessApp) {
         if (
-          request.nextUrl.pathname.includes('/login') ||
-          request.nextUrl.pathname.includes('/signup')
+          (request.nextUrl.pathname.includes('/login') ||
+            request.nextUrl.pathname.includes('/signup')) &&
+          !auth.user.hasAccess
         ) {
           return Response.redirect(new URL('/payment', request.nextUrl));
         }
@@ -89,6 +94,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user?.id) {
         // User is available during sign-in
         token.userId = user.id;
+        token.hasAccess = user.hasAccess;
       }
       return token;
     },
@@ -96,6 +102,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // and we have to manually attach the userId to the session
       if (session.user) {
         session.user.id = token.userId;
+        session.user.hasAccess = token.hasAccess;
       }
       return session;
     },
